@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uwebtop-guacd-deployment
+  namespace: uwebtop
+  labels:
+    app: uwebtop-guacd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uwebtop-guacd
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: uwebtop-guacd
+    spec:
+      imagePullSecrets:
+      - name: sf-repo
+      containers:
+      - image: uhub.service.ucloud.cn/safehouse/guacd:latest
+        name: uwebtop-guacd
+
+        ports:
+        - containerPort: 4822
+          name: uwebtop-guacd
+        volumeMounts:
+        - name: uwebtop-persistent-storage
+          mountPath: /record_data
+      volumes:
+      - name: uwebtop-persistent-storage
+        persistentVolumeClaim:
+          claimName: uwebtop-guacd-pvc

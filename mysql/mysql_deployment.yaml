@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uwebtop-mysql-deployment
+  namespace: uwebtop
+  labels:
+    app: uwebtop-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uwebtop-mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: uwebtop-mysql
+    spec:
+      imagePullSecrets:
+      - name: sf-repo
+      containers:
+      - image: uhub.service.ucloud.cn/safehouse/mysql:latest
+        name: uwebtop-mysql
+
+        ports:
+        - containerPort: 3306
+          name: uwebtop-mysql
+        volumeMounts:
+        - name: uwebtop-persistent-storage
+          mountPath: /var/lib/mysql
+        env:
+        - name: VERSION
+          value: v1
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mysql-root-password
+              name: uwebtop-mysql
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mysql-password
+              name: uwebtop-mysql
+        - name: MYSQL_USER
+          value: uwebtop
+      volumes:
+      - name: uwebtop-persistent-storage
+        persistentVolumeClaim:
+          claimName: uwebtop-mysql-pvc

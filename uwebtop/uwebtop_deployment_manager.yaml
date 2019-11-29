@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uwebtop-manager-deployment
+  namespace: uwebtop
+  labels:
+    app: uwebtop-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uwebtop-manager
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: uwebtop-manager
+    spec:
+      imagePullSecrets:
+      - name: sf-repo
+      containers:
+      - image: uhub.service.ucloud.cn/safehouse/uwebtop-svc:latest
+        name: uwebtop-manager
+        env:
+        - name: MASTER
+          value: "true"
+        - name: RUN_MODE
+          value: "debug"
+        ports:
+        - containerPort: 8081
+          name: uwebtop-manager
+        volumeMounts:
+        - name: uwebtop-config-map
+          mountPath: /etc/uwebtop-svc/conf
+      volumes:
+      - name: uwebtop-config-map
+        configMap:
+          name: uwebtop-config

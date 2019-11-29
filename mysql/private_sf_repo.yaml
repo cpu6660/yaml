@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  .dockerconfigjson: ewoJImF1dGhzIjogewoJCSJ1aHViLnNlcnZpY2UudWNsb3VkLmNuIjogewoJCQkiYXV0aCI6ICJjMkZtWldodmRYTmxkV2gxWWtCMVkyeHZkV1F1WTI0Nk9YVlBTbmdrTlRFMCIKCQl9Cgl9LAoJIkh0dHBIZWFkZXJzIjogewoJCSJVc2VyLUFnZW50IjogIkRvY2tlci1DbGllbnQvMTkuMDMuNSAobGludXgpIgoJfQp9Cg==
+kind: Secret
+metadata:
+  creationTimestamp: "2019-11-26T10:19:21Z"
+  name: sf-repo
+  namespace: uwebtop
+  resourceVersion: "3586614"
+  selfLink: /api/v1/namespaces/default/secrets/sf-repo
+  uid: 6c53e882-09a9-4126-a3bd-1d5db690d9e7
+type: kubernetes.io/dockerconfigjson

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: uwebtop-mysql-svc
+  namespace: uwebtop
+  labels:
+    app: uwebtop-mysql-svc
+spec:
+  type: NodePort
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: uwebtop-mysql
+

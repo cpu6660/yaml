@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: us-job
+  namespace: uwebtop
+  labels:
+    app: us-job
+spec:
+  template:
+    metadata:
+      labels:
+        app: us-job
+    spec:
+      imagePullSecrets:
+      - name: sf-repo
+      restartPolicy: Never
+      containers:
+      - image: uhub.service.ucloud.cn/safehouse/uwebtop-svc:latest
+        name: uwebtop-server-job
+        command: ["/opt/uwebtop-svc/migrate","-run_mode=debug","-step=5"]
+        ports:
+        - containerPort: 8081
+          name: us-job
+        volumeMounts:
+        - name: uwebtop-config-map
+          mountPath: /etc/uwebtop-svc/conf
+      volumes:
+      - name: uwebtop-config-map
+        configMap:
+          name: uwebtop-config

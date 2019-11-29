@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uwebtop-worker-deployment
+  namespace: uwebtop
+  labels:
+    app: uwebtop-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uwebtop-worker
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: uwebtop-worker
+    spec:
+      imagePullSecrets:
+      - name: sf-repo
+      containers:
+      - image: uhub.service.ucloud.cn/safehouse/uwebtop-svc:latest
+        name: uwebtop-worker
+        env:
+        - name: GUACD_SERVICE_ADDR
+          value: "10.68.167.149:4822"
+        - name: MASTER_ADDR
+          value: "http://10.68.187.25:8099"
+        - name: RUN_MODE
+          value: "debug"
+        ports:
+        - containerPort: 8081
+          name: uwebtop-worker
+        volumeMounts:
+        - name: uwebtop-config-map
+          mountPath: /etc/uwebtop-svc/conf
+      volumes:
+      - name: uwebtop-config-map
+        configMap:
+          name: uwebtop-config
