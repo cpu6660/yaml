@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uwebtop-guacd
+  namespace: uwebtop
+  labels:
+    app: uwebtop-guacd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uwebtop-guacd
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: uwebtop-guacd
+    spec:
+      containers:
+      - image: registry.apps.safehouse.mydomain.com/guacd:latest
+        name: uwebtop-guacd
+        ports:
+        - containerPort: 4822
+          name: uwebtop-guacd
+        env:
+        - name: VERSION
+          value: v1

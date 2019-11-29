@@ -1,0 +1,10 @@
+global:
+  storageClass: storageclass-default
+
+
+db:
+  user: uwebtop
+  password: ucloud.cn
+  name: sandbox
+
+
