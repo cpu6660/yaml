@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-service
+spec:
+  ports:
+  - port: 9000
+    targetPort: 9000
+    protocol: TCP
+  selector:
+    app: minio
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: minio
+  labels:
+    app: minio
+spec:
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      hostNetwork: true
+#      nodeSelector:
+#        minio-server: "true"
+      # We're just using a hostpath. This path must be the same on all servers, and should be the largest, fastest block device you can fit.
+      volumes:
+      - name: storage1
+        hostPath:
+          path: /data/minio1/
+      - name: storage2
+        hostPath:
+          path: /data/minio2/
+      containers:
+      - name: minio
+        env:
+        - name: MINIO_ACCESS_KEY
+          value: "minio"
+        - name: MINIO_SECRET_KEY
+          value: "minio123"
+        image: minio/minio:RELEASE.2019-10-12T01-39-57Z
+        # Unfortunately you must manually define each server. Perhaps autodiscovery via DNS can be implemented in the future.
+        args:
+        - server
+        - http://zhangjun-k8s02/data/minio1
+        - http://zhangjun-k8s02/data/minio2
+        - http://zhangjun-k8s03/data/minio1
+        - http://zhangjun-k8s03/data/minio2
+        ports:
+        - containerPort: 9000
+        volumeMounts:
+        - name: storage1
+          mountPath: /data/minio1/
+        - name: storage2
+          mountPath: /data/minio2/
