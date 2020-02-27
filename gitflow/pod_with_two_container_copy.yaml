@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitflow-st-copy
+  namespace: uwebtop
+  labels:
+    app: gitflow-st-copy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitflow-st-copy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: gitflow-st-copy
+    spec:
+      imagePullSecrets:
+      - name: sf-repo
+      containers:
+      - image: "uhub.service.ucloud.cn/safehouse/spy-go.gitflow-starter:master-101"
+        name: gitflow-st-copy
+        env:
+        - name: GUACD_SERVICE_ADDR
+          value: ""
+        - name: MASTER_ADDR
+          value: ""
+        - name: RUN_MODE
+          value: "debug"
+        ports:
+        - containerPort: 8080
+          name: gitflow-st-copy
+      - image: redis
+        name: gitflow-re-copy
+        ports:
+        - containerPort: 6379
+          name: gitflow-re-copy
+#        volumeMounts:
+#        - name: gitflow-starter-config-map
+#          mountPath: /etc/gitflow-starter-svc/conf
+#      volumes:
+#      - name: gitflow-config-map
+#        configMap:
+#          name: gitflow-config

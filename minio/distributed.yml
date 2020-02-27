@@ -33,7 +33,6 @@ spec:
       # We're just using a hostpath. This path must be the same on all servers, and should be the largest, fastest block device you can fit.
       volumes:
       - name: storage1
-        hostPath:
           path: /data/minio1/
       - name: storage2
         hostPath:

@@ -1,0 +1,61 @@
+# offline service
+apiVersion: v1
+kind: Service
+metadata:
+  name: jupyter-biz
+  namespace: biz
+spec:
+  selector:
+    app: jupyter-biz
+  ports:
+  - protocol: TCP
+    port: 8001
+    targetPort: 8000
+
+---
+
+# offline deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter-biz
+  namespace: biz
+  labels:
+    app: jupyter-biz
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jupyter-biz
+  template:
+    metadata:
+      labels:
+        app: jupyter-biz
+    spec:
+      imagePullSecrets:
+      - name: safehouseops-repo
+      hostAliases:
+      - ip: "10.9.172.119"
+        hostnames:
+        - "master1.safehouse.mydomain.com"
+      volumes:
+      # 环境变量文件
+      - name: jupyter-biz-env
+        configMap:
+          name: jupyter-biz-env
+      # kubeconfig 配置文件
+      - name: kube-config
+        configMap:
+          name: kube-config
+      containers:
+      - name: jupyter-biz
+        image: {{ .Image }}
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: jupyter-biz-env
+          mountPath: /app/config/.env
+          subPath: .env
+        - name: kube-config
+          mountPath: /app/config/k8s_config
+          subPath: config

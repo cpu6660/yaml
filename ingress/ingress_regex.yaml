@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: test-regex
+  namespace: uwebtop
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/server-snippet: |
+        location ~ ^/jupyter-proxy/(.*?)/ {
+          proxy_set_header Host $host;
+
+          # 设置 Cookie
+          proxy_set_header Cookie $http_cookie;
+
+          resolver 10.233.0.3;
+          proxy_pass http://$1.uwebtop.svc.cluster.local:8080;
+
+          # XFF 机制，透传来源 IP 信息
+          proxy_set_header X-Real-IP  $remote_addr;
+          proxy_set_header X-Forwarded-For $remote_addr;
+        }
+
+spec:
+  rules:
+  - host: foo.bar.com

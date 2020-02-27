@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: test
+  namespace: uwebtop
+spec:
+  rules:
+  - host: foo.bar.com
+    http:
+      paths:
+      - path: /ping
+        backend:
+          serviceName: git-starter-svc
+          servicePort: 8080
+      - path: /read_from_redis
+        backend:
+          serviceName: gitflow-st-copy
+          servicePort: 8080
