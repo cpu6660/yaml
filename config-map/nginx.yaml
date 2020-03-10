@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-config
+  namespace: uwebtop
+  labels:
+    app: nginx-config
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-config
+  template:
+    metadata:
+      labels:
+        app: nginx-config
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-config-map
+          # mountPath: /root    ### without filename
+          # mountPath: /root/ceshi.config ### can not appoint filename
+          # mountPath: /etc/apt  ### 如果指定的目录下有其他文件，那么其他文件会被覆盖
+          #mountPath: /etc/apt/config.json
+
+          ### mountPath can use different filename
+          mountPath: /etc/apt/ceshi.json
+          subPath: config.json
+      volumes:
+      - name:  nginx-config-map
+        configMap:
+          name: nginx-config-map
+
+#  {
+#    "spec": {
+#           "replicas" : 1,
+#           "selector" : {
+#               "matchLabels": {
+#                    "app" : "nginx-config"
+#               }
+#           },
+#           "template": {
+#               "metadata" :{
+#                  "labels": {
+#                     "app" : "nginx-config"
+#                  }
+#               },
+#               "spec": {
+#                  "containers": [{"name": "nginx", "image": "nginx", "ports":[{"containerPort": 80}]}],
+#                  "volumes": []
+#
+#               }
+#           }
+#
+#
+#    }
+#  }

@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gitflow-starter
+  name: gitflow-stnew
   namespace: uwebtop
   labels:
-    app: gitflow-starter
+    app: gitflow-stnew
 spec:
-  replicas: 1
+  replicas: 5
   selector:
     matchLabels:
-      app: gitflow-starter
+      app: gitflow-stnew
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: gitflow-starter
+        app: gitflow-stnew
     spec:
       imagePullSecrets:
       - name: sf-repo
       containers:
       - image: "uhub.service.ucloud.cn/safehouse/spy-go.gitflow-starter:master-101"
-        name: gitflow-starter
+        name: gitflow-stnew
         env:
         - name: GUACD_SERVICE_ADDR
           value: ""

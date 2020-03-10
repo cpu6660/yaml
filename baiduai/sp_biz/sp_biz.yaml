@@ -1,0 +1,55 @@
+# sp-biz
+apiVersion: v1
+kind: Service
+metadata:
+  name: sp-biz
+  namespace: test-baiduai-manager
+spec:
+  selector:
+    app: sp-biz
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sp-biz
+  namespace: test-baiduai-manager
+  labels:
+    app: sp-biz
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sp-biz
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sp-biz
+    spec:
+      containers:
+      - image: uhub.service.ucloud.cn/safehouse/sp-biz:0.1.38
+        name: sp-biz
+        ports:
+        - containerPort: 8000
+          name: sp-biz
+        volumeMounts:
+        - name: sp-biz-conf
+          mountPath: /app/config/config_dev.toml
+          subPath: config_dev.toml
+        - name: sp-biz-env
+          mountPath: /app/config/.env
+          subPath: .env
+      volumes:
+      - name: sp-biz-conf
+        configMap:
+          name: sp-biz-conf
+      - name: sp-biz-env
+        configMap:
+          name: sp-biz-env

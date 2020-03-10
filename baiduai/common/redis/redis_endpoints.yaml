@@ -1,0 +1,10 @@
+kind: Endpoints
+apiVersion: v1
+metadata:
+  namespace: universal-baiduai-common
+  name: redis
+subsets:
+- addresses:
+  - ip: 10.9.140.229
+  ports:
+  - port: 6379

@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: minio
+  namespace: uwebtop
+spec:
+  type: ExternalName
+  externalName: minio.test-baiduai-common.svc.cluster.local
+  ports:
+  - port: 9001

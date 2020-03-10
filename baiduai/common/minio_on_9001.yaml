@@ -1,0 +1,71 @@
+# 创建 NodePort 类型的 Service，便于集群外部访问 minio
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  namespace: test-baiduai-common
+spec:
+  type: NodePort
+  ports:
+  - port: 9001
+    targetPort: 9001
+    protocol: TCP
+    nodePort: 31312
+  selector:
+    app: minio
+
+---
+
+# 将 minio 以 DaemonSet 的方式部署
+# 部署前要为 worker 节点打上 minio 标签
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: minio
+  namespace: test-baiduai-common
+  labels:
+    app: minio
+spec:
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        minio-server: "true"
+      # We're just using a hostpath. This path must be the same on all servers, and should be the largest, fastest block device you can fit.
+      volumes:
+      - name: storage1
+        hostPath:
+          path: /data/minio3/
+      - name: storage2
+        hostPath:
+          path: /data/minio4/
+      containers:
+      - name: minio
+        env:
+        - name: MINIO_ACCESS_KEY
+          value: "minio"
+        - name: MINIO_SECRET_KEY
+          value: "minio123"
+        image: minio/minio:RELEASE.2019-10-12T01-39-57Z
+        # Unfortunately you must manually define each server. Perhaps autodiscovery via DNS can be implemented in the future.
+        args:
+        - server
+        - --address
+        - 0.0.0.0:9001
+        - http://worker1.safehouse.mydomain.com/data/minio3
+        - http://worker1.safehouse.mydomain.com/data/minio4
+        - http://worker2.safehouse.mydomain.com/data/minio3
+        - http://worker2.safehouse.mydomain.com/data/minio4
+        ports:
+        - containerPort: 9001
+        volumeMounts:
+        - name: storage1
+          mountPath: /data/minio3/
+        - name: storage2
+          mountPath: /data/minio4/

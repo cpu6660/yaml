@@ -1,0 +1,48 @@
+# minio manager
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-manager
+  namespace: test-baiduai-manager
+spec:
+  selector:
+    app: minio-manager
+  ports:
+  - protocol: TCP
+    port: 4001
+    targetPort: 4001
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio-manager
+  namespace: test-baiduai-manager
+  labels:
+    app: minio-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio-manager
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: minio-manager
+    spec:
+      containers:
+      - image: uhub.service.ucloud.cn/safehouse/minio_manager:test-v0.0.6
+        name: minio-manager
+        ports:
+        - containerPort: 4001
+          name: minio-manager
+        volumeMounts:
+        - name: minio-manager-conf
+          mountPath: /minio_manager/conf
+      volumes:
+      - name: minio-manager-conf
+        configMap:
+          name: minio-manager-conf

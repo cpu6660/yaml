@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-config
+  namespace: uwebtop
+  labels:
+    app: nginx-config
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-config
+  template:
+    metadata:
+      labels:
+        app: nginx-config
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80

@@ -1,0 +1,76 @@
+[ database ]
+engine = 'django.db.backends.mysql'
+user = 'root'
+password = 'Tpz61j1Gi1hj'
+host = 'db.test-baiduai-common'
+port = 3309
+database = 'ga3'
+
+[ redis ]
+host = 'redis.test-baiduai-common'
+port = 6379
+password = 'Tpz61j1Gi1hj'
+
+
+[ harbor ]
+internal_base = 'http://192.168.255.119'
+external_base = 'http://pre-hub.sf.ucloud.cn'
+  [ harbor.admin ]
+  username = 'admin'
+  password = 'Harbor12345'
+
+
+[ homepage ]
+base = ''  # '59.61.216.125:9086'
+account_creation_path = '' #  'http://59.61.216.125:9086/citizencloud/compete/train/account-notice'
+    [ homepage.shujiao ]
+    # 获取沙箱账号URL
+    get_sandbox_account_url = "https://test.data.sh.gov.cn:30443/zq/api/sandbox_name/"
+    notify_account_to_shujiao = 1  # 表示定制给供数交使用
+    # 数交跨域白名单
+    cors_origin_whitelist = ["https://data.sh.gov.cn", "http://180.169.39.226:30443", "http://180.169.39.226:30443", "https://test.data.sh.gov.cn"]
+
+[ competition ]
+# 大赛重定向的页面
+competition_page_url = "/source-manager/"
+
+[ jupyter_manager ]
+base_url = "http://jupyter-biz.test-baiduai-manager:8001"
+token = "ALH+leTdcNRTigNM"
+
+
+
+### 这些配置目前用不到,但是不能删除
+[ uwebtop ]
+host = 'aloha.sf.ucloud.cn'  # 网站域名
+intranet_host = '192.168.255.113:8081'
+jwt_key = 'dc5fef4d423f4711ba7b40f2cb0b9af9'  # 返回给用户的 JWT 加密密钥, 每个项目建议单独生成
+  [ uwebtop.quota ]
+  vnc = 0
+  ssh = 10
+
+[ iam ]
+base = ''  # example: 'http://117.50.63.9:8848'
+namespace = ''  # example: 'wechat'
+password = ''  # example: '123456'
+
+
+[ rc_manager ]
+base = '192.168.255.120:8081'
+types = [
+    # type name, source name, template name
+    ['face', 'bsSnap-s500ogjm', 'continual_ga'],
+    ['image', 'bsSnap-s500ogjm', 'continual_ga'],
+    ['soda', 'bsSnap-s500ogjm', 'continual_ga'],
+    ['flag', 'bsSnap-s500ogjm', 'continual_ga'],
+    ['object', 'bsSnap-s500ogjm', 'continual_ga'],
+    ['landmark', 'bsSnap-s500ogjm', 'continual_ga'],
+    ['logo', 'bsSnap-s500ogjm', 'continual_ga'],
+    ['picture', 'bsSnap-s500ogjm', 'continual_ga'],
+]
+
+
+[ result ]
+base = 'http://192.168.255.97'
+subscriber_base = 'http://59.61.216.125:9086/citizencloud/compete/train/audit-result'
+public_ftp_address = '127.0.0.1'

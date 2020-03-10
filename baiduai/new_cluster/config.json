@@ -1,0 +1,25 @@
+{
+  "env": "pre",
+  "http": {
+    "listen_addr": "0.0.0.0",
+    "listen_port": 4001
+  },
+  "aim_endpoint": "10.25.108.117:19999",
+  "account_endpoint": "http://10.25.108.117:8282/account/authenticate/",
+  "minio_endpoint": "minio.test-baiduai-common:9000",
+  "nginx_endpoint": "120.132.27.75:30008/sandbox/files",
+  "access_key_id": "minio",
+  "secret_access_key": "minio123",
+  "use_ssl": 0,
+  "uresource_domain": "http://internal.api.ucloud.cn",
+  "log": {
+      "LogDir": "usafehouse_minio_api/logs",
+      "LogPrefix": "safehouse_minio_api",
+      "LogSuffix": ".log",
+      "LogSize": 50,
+      "LogLevel": "DEBUG"
+},
+  "zk_config": {
+  }
+}
+
