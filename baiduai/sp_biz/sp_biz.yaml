@@ -34,7 +34,7 @@ spec:
         app: sp-biz
     spec:
       containers:
-      - image: uhub.service.ucloud.cn/safehouse/sp-biz:0.1.38
+      - image: uhub.service.ucloud.cn/safehouse/sp-biz-baidu:0.0.5
         name: sp-biz
         ports:
         - containerPort: 8000

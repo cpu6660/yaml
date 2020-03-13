@@ -13,8 +13,8 @@ password = 'Tpz61j1Gi1hj'
 
 
 [ harbor ]
-internal_base = 'http://192.168.255.119'
-external_base = 'http://pre-hub.sf.ucloud.cn'
+internal_base = 'http://192.168.255.84'
+external_base = 'http://106.75.84.49'
   [ harbor.admin ]
   username = 'admin'
   password = 'Harbor12345'

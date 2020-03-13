@@ -1,0 +1,329 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/podIP: 10.250.3.12/32
+    cni.projectcalico.org/podIPs: 10.250.3.12/32
+    sidecar.istio.io/status: '{"version":"b5faac9e6b02231b7db3b29487392a395f1c85c746bf62dc8cb660444af6e0d9","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"],"imagePullSecrets":null}'
+  creationTimestamp: "2020-03-09T09:01:20Z"
+  generateName: helloworld-arm-v1-556bb44684-
+  labels:
+    app: helloworld-arm
+    pod-template-hash: 556bb44684
+    security.istio.io/tlsMode: istio
+    version: v1
+  name: helloworld-arm-v1-556bb44684-b9tgd
+  namespace: arm-ns
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: helloworld-arm-v1-556bb44684
+    uid: 98dd25f2-5078-4fde-af09-ac14b164ff2b
+  resourceVersion: "658022"
+  selfLink: /api/v1/namespaces/arm-ns/pods/helloworld-arm-v1-556bb44684-b9tgd
+  uid: 823a928d-0d54-44d3-88ef-1d0282592609
+spec:
+  containers:
+  - image: hub.sf.ucloud.cn/istio/helloworld:v1
+    imagePullPolicy: IfNotPresent
+    name: helloworld-arm
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 100m
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-ph6z9
+      readOnly: true
+  - args:
+    - proxy
+    - sidecar
+    - --domain
+    - $(POD_NAMESPACE).svc.cluster.local
+    - --configPath
+    - /etc/istio/proxy
+    - --binaryPath
+    - /usr/local/bin/envoy
+    - --serviceCluster
+    - helloworld-arm.$(POD_NAMESPACE)
+    - --drainDuration
+    - 45s
+    - --parentShutdownDuration
+    - 1m0s
+    - --discoveryAddress
+    - istio-pilot.istio-system:15010
+    - --zipkinAddress
+    - zipkin.istio-system:9411
+    - --proxyLogLevel=warning
+    - --proxyComponentLogLevel=misc:error
+    - --connectTimeout
+    - 10s
+    - --proxyAdminPort
+    - "15000"
+    - --concurrency
+    - "2"
+    - --controlPlaneAuthPolicy
+    - NONE
+    - --dnsRefreshRate
+    - 300s
+    - --statusPort
+    - "15020"
+    - --applicationPorts
+    - "8080"
+    - --trust-domain=cluster.local
+    env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: INSTANCE_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    - name: SERVICE_ACCOUNT
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.serviceAccountName
+    - name: HOST_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.hostIP
+    - name: ISTIO_META_POD_PORTS
+      value: |-
+        [
+            {"containerPort":8080,"protocol":"TCP"}
+        ]
+    - name: ISTIO_META_CLUSTER_ID
+      value: Kubernetes
+    - name: ISTIO_META_POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: ISTIO_META_CONFIG_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: SDS_ENABLED
+      value: "false"
+    - name: ISTIO_META_INTERCEPTION_MODE
+      value: REDIRECT
+    - name: ISTIO_META_INCLUDE_INBOUND_PORTS
+      value: "8080"
+    - name: ISTIO_METAJSON_LABELS
+      value: |
+        {"app":"helloworld-arm","pod-template-hash":"556bb44684","version":"v1"}
+    - name: ISTIO_META_WORKLOAD_NAME
+      value: helloworld-arm-v1
+    - name: ISTIO_META_OWNER
+      value: kubernetes://apis/apps/v1/namespaces/arm-ns/deployments/helloworld-arm-v1
+    - name: ISTIO_META_MESH_ID
+      value: cluster.local
+    image: hub.sf.ucloud.cn/istio/proxyv2:1.4.5
+    imagePullPolicy: IfNotPresent
+    name: istio-proxy
+    ports:
+    - containerPort: 15090
+      name: http-envoy-prom
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 30
+      httpGet:
+        path: /healthz/ready
+        port: 15020
+        scheme: HTTP
+      initialDelaySeconds: 1
+      periodSeconds: 2
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 10m
+        memory: 40Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsGroup: 1337
+      runAsNonRoot: true
+      runAsUser: 1337
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/istio/proxy
+      name: istio-envoy
+    - mountPath: /etc/certs/
+      name: istio-certs
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-ph6z9
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  initContainers:
+  - command:
+    - istio-iptables
+    - -p
+    - "15001"
+    - -z
+    - "15006"
+    - -u
+    - "1337"
+    - -m
+    - REDIRECT
+    - -i
+    - '*'
+    - -x
+    - ""
+    - -b
+    - '*'
+    - -d
+    - "15020"
+    image: hub.sf.ucloud.cn/istio/proxyv2:1.4.5
+    imagePullPolicy: IfNotPresent
+    name: istio-init
+    resources:
+      limits:
+        cpu: 100m
+        memory: 50Mi
+      requests:
+        cpu: 10m
+        memory: 10Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        add:
+        - NET_ADMIN
+        - NET_RAW
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: false
+      runAsGroup: 0
+      runAsNonRoot: false
+      runAsUser: 0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-ph6z9
+      readOnly: true
+  nodeName: worker3
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: default-token-ph6z9
+    secret:
+      defaultMode: 420
+      secretName: default-token-ph6z9
+  - emptyDir:
+      medium: Memory
+    name: istio-envoy
+  - name: istio-certs
+    secret:
+      defaultMode: 420
+      optional: true
+      secretName: istio.default
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2020-03-09T09:01:52Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2020-03-09T09:02:08Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2020-03-09T09:02:08Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2020-03-09T09:01:20Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://1e8d6230c12c4423d7d8eacbe23d12416d7de457788733a2fed6854f2fc5bbed
+    image: hub.sf.ucloud.cn/istio/helloworld:v1
+    imageID: docker://sha256:410ff5296c5ba7473cad982c774c048dfb32e9ce684d7b3c236fd33b07327b46
+    lastState: {}
+    name: helloworld-arm
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2020-03-09T09:01:52Z"
+  - containerID: docker://84a5aad7fc9f4dc8341b0c2ef2d15889f2699c3171f81e71f4bfa04e1fdb0086
+    image: hub.sf.ucloud.cn/istio/proxyv2:1.4.5
+    imageID: docker://sha256:cdc18c7a9dfd001a7121d90603d414d1da2b3de13aea627b2ce7df9fea36f05d
+    lastState: {}
+    name: istio-proxy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2020-03-09T09:01:53Z"
+  hostIP: 10.0.0.49
+  initContainerStatuses:
+  - containerID: docker://48b1b51d07cd5933478dad71359e771493df51e728c0ff783100647a8e00ede3
+    image: hub.sf.ucloud.cn/istio/proxyv2:1.4.5
+    imageID: docker://sha256:cdc18c7a9dfd001a7121d90603d414d1da2b3de13aea627b2ce7df9fea36f05d
+    lastState: {}
+    name: istio-init
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: docker://48b1b51d07cd5933478dad71359e771493df51e728c0ff783100647a8e00ede3
+        exitCode: 0
+        finishedAt: "2020-03-09T09:01:51Z"
+        reason: Completed
+        startedAt: "2020-03-09T09:01:48Z"
+  phase: Running
+  podIP: 10.250.3.12
+  podIPs:
+  - ip: 10.250.3.12
+  qosClass: Burstable
+  startTime: "2020-03-09T09:01:46Z"
+
+
+
+
