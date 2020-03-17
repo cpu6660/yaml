@@ -1,0 +1,78 @@
+admin:
+  access_log_path: "/tmp/access.log"
+  profile_path: "/tmp/envoy.prof"
+  address:
+    socket_address:
+      protocol: TCP
+      address: 0.0.0.0
+      port_value: 9091
+
+
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 80
+    filter_chains:
+    - filters:
+      - name: envoy.ext_authz
+        config:
+          stat_prefix: ext_authz
+          grpc_service:
+            timeout: 2s
+            envoy_grpc:
+              cluster_name: ext-authz
+          failure_mode_allow: true
+      - name: envoy.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          stat_prefix: ingress_http
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/"
+                route:
+                  host_rewrite: www.baidu.com
+                  cluster: service_echo
+          http_filters:
+          - name: envoy.router
+            config: {}
+
+
+  clusters:
+  - name: service_echo
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    # Comment out the following line to test on v6 networks
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: service_echo
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 192.168.187.58
+                port_value: 9999
+  - name: ext-authz
+    type: static
+    connect_timeout: 2s
+    http2_protocol_options: {}
+    load_assignment:
+      cluster_name: ext-authz
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 192.168.187.58
+                port_value: 8080
+
