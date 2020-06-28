@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    app: offlineserver-user-data
+  name:  offlineserver-user-data
+
+spec:
+  accessModes:
+  - ReadOnlyMany
+  capacity:
+    storage: 100Gi
+  storageClassName: course-nfs-storage
+  nfs:
+    path: /data/k8s/jupyter-manager-user-data
+    server: 192.168.255.22
+    readOnly: true

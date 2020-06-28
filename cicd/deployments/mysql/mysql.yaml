@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: test-xmdataopen-manager
+spec:
+  ports:
+  - port: 3309
+    protocol: TCP
+    targetPort: 3309
+  type: ClusterIP
+
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  namespace: test-xmdataopen-manager
+  name: db
+subsets:
+- addresses:
+  - ip: 192.168.255.76
+  ports:
+  - port: 3309

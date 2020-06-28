@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-encrypt
+  labels:
+    app: nginx-encrypt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-encrypt
+  template:
+    metadata:
+      labels:
+        app: nginx-encrypt
+    spec:
+      containers:
+      - name: nginx-encrypt
+        image: uhub.service.ucloud.cn/safehouse/gocryptfs:1.1
+        command: ['sh', '-c',"sleep 30000000"]
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-encrypt-volume
+          mountPath: /dataset
+      volumes:
+      - name: nginx-encrypt-volume
+        hostPath:
+          path: /data/plain
+      nodeSelector:
+        encryptnode: fuse

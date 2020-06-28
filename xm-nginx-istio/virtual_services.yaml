@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: edge-ucloud
+  namespace: test-istio-universal
+spec:
+  gateways:
+  - ucloud-gateway
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: nginx-xm.test-istio-universal.svc.cluster.local
+        port:
+          number: 80

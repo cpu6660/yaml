@@ -1,0 +1,16 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: nginx-encrypt-volume-pvc
+  labels:
+    app: nginx-encrypt-volume-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 20M
+  storageClassName: course-nfs-storage
+  selector:
+    matchLabels:
+      app: nginx-encrypt-volume

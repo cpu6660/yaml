@@ -1,0 +1,50 @@
+apiVersion: v1
+metadata:
+  name: common-env
+  namespace: test-xmdataopen-manager
+kind: ConfigMap
+data:
+  U_RUN_MODE: test
+  U_PRODUCT_NAME: xm_dataopen
+  U_FRONTEND_DOMAIN: chinaai.sf.ucloud.cn
+  U_BACKEND_DOMAIN: aloha.sf.ucloud.cn
+  U_HUB_EXTERNAL_DOMAIN: hub.ucloud.cn
+  U_RESOURCE_PROVIDER: ucloud
+  U_REDIS_HOST: redis
+  U_REDIS_PORT: "6379"
+  U_REDIS_PASSWORD: Tpz61j1Gi1hj
+  U_HARBOR_HOST: harbor
+  U_HARBOR_USER: admin
+  U_HARBOR_PASSWORD: Harbor12345
+  U_MINIO_HOST: minio
+  U_MINIO_PORT: "9000"
+  U_MINIO_ACCESS_KEY: minio
+  U_MINIO_SECRET_KEY: minio123
+  U_SAFE_GATE_SERVICE: safegate:8000
+  U_DATAOPEN_AUTH_SERVICE: dataopen-auth:8000
+  U_SSO_AUTH_SERVICE: sso-auth:8000
+  U_PLATFORM_CONTINUE_SERVICE: platform-continue:8000
+  U_DYNAMIC_PROXY_SERVICE: dynamic-proxy:8000
+  U_DOCKER_MANAGER_SERVICE: docker-manager:8000
+  U_SP_BIZ_SERVICE: sp-biz:8000
+  U_MINIO_MANAGER_SERVICE: minio-manager:4001
+  U_JUPYTER_BIZ_SERVICE: jupyter-biz:8001
+  U_UWEBTOP_SERVICE: uwebtop:8081
+  U_IAM_SERVICE: iam:19999
+  U_DOP_BIZ_SERVICE: dop-biz:39898
+  U_DOP_BIZ_ADMIN_SERVICE: dop-biz-admin:39897
+  U_DOP_BIZ_HTTP_SERVICE: dop-biz-http:39888
+  U_DOP_BIZ_PROXY_SERVICE: dop-biz-proxy:39899
+  U_DOP_DATA_PROXY_SERVICE: dataproxy:51020
+  U_DOP_DATA_GATE_FORMAL_SERVICE: datagate-formal:80
+  U_DOP_DATA_GATE_SAMPLE_SERVICE: datagate-sample:80
+  U_RCMANAGER_SERVICE: rcmanager:62900
+  U_AUDIT_MANAGER_SERVICE: auditmanager:54000
+  U_DYNAMIC_MASKER_SERVICE: dynamic-masker:31003
+  U_OFFLINE_SERVER_SERVICE: offline-server:31007
+  U_SCORPIO_SERVICE: scorpio:31000
+  U_SP_CUSTOM_BIZ: sp-custom-biz:39800
+  JAEGER_AGENT_PORT: "6831"
+
+
+

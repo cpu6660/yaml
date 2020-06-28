@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-image-id
+  namespace: test-xmai-manager
+  labels:
+    app: nginx-image-id
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-image-id
+  template:
+    metadata:
+      labels:
+        app: nginx-image-id
+    spec:
+      containers:
+      - name: nginx
+        image: uhub.service.ucloud.cn/safehouse/nginx:1.0
+        env:
+        - name: SERVICE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: image
+        ports:
+        - containerPort: 80

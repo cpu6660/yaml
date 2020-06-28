@@ -1,0 +1,16 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jupyter-worker-user-data-pvc
+  labels:
+    app: jupyter-worker-user-data
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: course-nfs-storage
+  selector:
+    matchLabels:
+      app: jupyter-worker-user-data

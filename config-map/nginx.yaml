@@ -28,7 +28,7 @@ spec:
           #mountPath: /etc/apt/config.json
 
           ### mountPath can use different filename
-          mountPath: /etc/apt/ceshi.json
+          mountPath: /etc/config/ceshi.json
           subPath: config.json
       volumes:
       - name:  nginx-config-map

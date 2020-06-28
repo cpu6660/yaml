@@ -1,0 +1,39 @@
+<source>
+  @type tail
+  tag k8s.pod.log.*
+  path /var/log/containers/*.log
+  pos_file /home/fluent/k8s.log.pos
+  time_format %Y-%m-%dT%H:%M:%S
+  # json
+  <parse>
+    @type json
+    timekey time
+    keep_time_key true
+    time_type string
+  </parse>
+
+</source>
+
+<filter k8s.pod.log**>
+	@type parser
+	key_name log
+	reserve_data true
+	remove_key_name_field true
+	 <parse>
+            @type json
+     </parse>
+</filter>
+
+
+<filter k8s.pod.log**>
+  @type kubernetes_metadata
+</filter>
+
+
+<match k8s.pod.log**>
+  @type elasticsearch_dynamic
+  host 192.168.255.132
+  port 9200
+  logstash_format true
+  logstash_prefix ${record['kubernetes']['container_name']}.${record['kubernetes']['namespace_name']}
+</match>

@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx0-deployment
+  labels:
+    app: nginx0
+spec:
+  ports:
+  - port: 80
+    name: web
+  selector:
+    app: nginx0
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx0-deployment
+  labels:
+    app: nginx0-deployment
+spec:
+  replicas: 3
+  serviceName: nginx0-deployment
+  selector:
+    matchLabels:
+      app: nginx0
+  template:
+    metadata:
+      labels:
+        app: nginx0
+    spec:
+      containers:
+      - name: nginx
+        image: uhub.service.ucloud.cn/safehouse/nginx:1.0
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-dir
+          mountPath: /minio_manager/conf  ### 如果是挂载整个目录,只需要mountpath
+      volumes:
+      - name: nginx-dir
+        configMap:
+          name: nginx-dir

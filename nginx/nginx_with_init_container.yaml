@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx0-deployment
+  labels:
+    app: nginx0-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx0
+  template:
+    metadata:
+      labels:
+        app: nginx0
+    spec:
+      initContainers:
+      - name: db-migrate
+          image: busybox
+          command: ['sh', '-c', 'until nslookup myservice; do echo waiting for myservice; sleep 2; done;']
+
+      containers:
+      - name: nginx
+        image: uhub.service.ucloud.cn/safehouse/nginx:1.0
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-dir
+          mountPath: /minio_manager/conf  ### 如果是挂载整个目录,只需要mountpath
+      volumes:
+      - name: nginx-dir
+        configMap:
+          name: nginx-dir

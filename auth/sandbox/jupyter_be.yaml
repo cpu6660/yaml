@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ServiceAccount
+imagePullSecrets:
+- name: sf-repo
+metadata:
+  name: jupyter-be
+  namespace: test-istio-universal
+  labels:
+    k8s-app: jupyter-be
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jupyter-be
+  namespace: test-istio-universal
+  labels:
+    app: jupyter-be
+spec:
+  selector:
+    app: jupyter-be
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter-be
+  namespace: test-istio-universal
+  labels:
+    app: jupyter-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jupyter-be
+  template:
+    metadata:
+      labels:
+        app: jupyter-be
+    spec:
+      serviceAccountName: jupyter-be
+      containers:
+      - name: jupyter-be
+        image: uhub.service.ucloud.cn/safehouse/network-multitool:latest
+        ports:
+        - containerPort: 8080

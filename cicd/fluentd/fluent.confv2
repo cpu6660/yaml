@@ -1,0 +1,36 @@
+<source>
+  @type tail
+  tag k8s.pod.log.*
+  path /var/log/containers/*.log
+  pos_file /home/fluent/k8s.log.pos
+  # json
+  <parse>
+    @type json
+    timekey time
+    keep_time_key true
+    time_type string
+    time_format %Y-%m-%dT%H:%M:%S.%L
+  </parse>
+
+</source>
+
+<filter k8s.pod.log**>
+	@type parser
+	key_name log
+	reserve_data true
+	remove_key_name_field true
+	 <parse>
+            @type json
+     </parse>
+</filter>
+
+<match k8s.pod.log**>
+  @type elasticsearch
+  host 192.168.255.13
+  port 9200
+  index_name ${tag}.%Y%m%d
+  <buffer tag, time>
+	  @type memory
+	  timekey 86400 # 1 day time slice
+  </buffer>
+</match>

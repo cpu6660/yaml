@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  namespace: test-xmdataopen-manager
+spec:
+  externalName: minio.test-baiduai-common.svc.cluster.local
+  ports:
+  - port: 9000
+    protocol: TCP
+    targetPort: 9000
+  sessionAffinity: None
+  type: ExternalName

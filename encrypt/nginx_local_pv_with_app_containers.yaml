@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-encrypt
+  labels:
+    app: nginx-encrypt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-encrypt
+  template:
+    metadata:
+      labels:
+        app: nginx-encrypt
+    spec:
+      containers:
+      - name: decrypt-data
+        image: uhub.service.ucloud.cn/safehouse/gocryptfs:1.1
+        command: ['sh', '-c', ' mkdir -p /data/decrypt_data;echo "123456" | gocryptfs -q -- /dataset/cipher /data/decrypt_data;ls /data/decrypt_data;df -h']
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+            - SYS_ADMIN
+        volumeMounts:
+        - name: nginx-encrypt-volume
+          mountPath: /dataset
+        - name: decrypted-pv
+          mountPath: /data/
+          mountPropagation: Bidirectional
+      - name: nginx-encrypt
+        image: uhub.service.ucloud.cn/safehouse/nginx:1.0
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: decrypted-pv
+          mountPath: /data/decrypt_data
+      volumes:
+      - name: nginx-encrypt-volume
+        persistentVolumeClaim:
+          claimName: nginx-encrypt-volume-pvc
+      - name: decrypted-pv
+        hostPath:
+          path: /data/nginx-test

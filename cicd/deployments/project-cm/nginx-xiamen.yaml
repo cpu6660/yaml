@@ -1,0 +1,14 @@
+apiVersion: v1
+metadata:
+  name: nginx-xiamen-env
+  namespace: test-xmdataopen-manager
+kind: ConfigMap
+data:
+  JUPYTER_NAMESPACE: test-xmdataopen-jupyter
+  K8S_DNS_RESOLVER:  172.16.0.10
+
+
+
+
+
+

@@ -1,0 +1,17 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "AuthorizationPolicy"
+metadata:
+  name: "test-data"
+  namespace: test-istio-universal
+spec:
+  selector:
+    matchLabels:
+      app: test-data
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/test-istio-universal/sa/test-sandbox"]
+    to:
+    - operation:
+        methods: ["GET"]
+

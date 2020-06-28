@@ -1,0 +1,63 @@
+### https://discuss.istio.io/t/request-header-operations-to-add-cookie-as-header/5074
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: jwt-lua-filter
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: GATEWAY
+      listener:
+        filterChain:
+          filter:
+            name: envoy.http_connection_manager
+
+    patch:
+      operation: INSERT_BEFORE
+      value: # lua filter specification
+        name: envoy.lua
+        typed_config:
+          "@type": "type.googleapis.com/envoy.config.filter.http.lua.v2.Lua"
+          inlineCode: |
+            function stringSplit(input, delimiter)
+                        input = tostring(input)
+                        delimiter = tostring(delimiter)
+                        if (delimiter=='') then return false end
+                        local pos,arr = 0, {}
+                        -- for each divider found
+                        for st,sp in function() return string.find(input, delimiter, pos, true) end do
+                            table.insert(arr, string.sub(input, pos, st - 1))
+                            pos = sp + 1
+                        end
+                        table.insert(arr, string.sub(input, pos))
+                        return arr
+            end
+            function envoy_on_request(request_handle)
+              local jwtHeaderName = "authorization"
+              local cookieString = request_handle:headers():get("cookie")
+              local jwt = nil
+              if cookieString ~= nil then
+                    local splitCookieString = stringSplit(cookieString, ";")
+
+                    for i, cookieItem in ipairs(splitCookieString) do
+                      if string.find(cookieItem, jwtHeaderName) ~= nil then
+                        jwt = stringSplit(cookieItem, "=")[2]
+                      end
+                    end
+              end
+
+              if jwt ~= nil then
+                request_handle:headers():add("Authorization", jwt)
+              end
+            end
+
+            function envoy_on_response(response_handle)
+              response_handle:headers():add("response_custom_key", "lalallaalall")
+            end
+
+

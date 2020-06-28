@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  JUPYTER_NAMESPACE: test-xmai-jupyter
+  K8S_DNS_RESOLVER: 172.16.0.10
+kind: ConfigMap
+metadata:
+  name: nginx-xiamen-env
+  namespace: test-istio-universal

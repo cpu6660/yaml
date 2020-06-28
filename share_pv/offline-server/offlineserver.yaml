@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx2-deployment
+  labels:
+    app: nginx2-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx2
+  template:
+    metadata:
+      labels:
+        app: nginx2
+    spec:
+      containers:
+      - name: nginx2
+        image: uhub.service.ucloud.cn/safehouse/nginx:1.0
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: jupyter-manager-user-data
+          mountPath: /minio_manager/conf
+          readOnly: true
+      volumes:
+      - name: jupyter-manager-user-data
+        persistentVolumeClaim:
+          claimName: offline-server-user-data-pvc

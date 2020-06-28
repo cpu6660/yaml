@@ -1,0 +1,17 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: formal-data-networkpolicy
+  namespace: test-istio-universal
+spec:
+  podSelector:
+    matchLabels:
+      app: formal-data
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: jupyter-be
+    ports:
+    - protocol: TCP
+      port: 8080

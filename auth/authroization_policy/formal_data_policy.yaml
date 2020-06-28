@@ -1,0 +1,17 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "AuthorizationPolicy"
+metadata:
+  name: "formal-data"
+  namespace: test-istio-universal
+spec:
+  selector:
+    matchLabels:
+      app: formal-data
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/test-istio-universal/sa/jupyter-be"]
+    to:
+    - operation:
+        methods: ["GET"]
+

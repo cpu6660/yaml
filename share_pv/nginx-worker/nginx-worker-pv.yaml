@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    app: jupyter-worker-user-data
+  name:  jupyter-worker-user-data
+
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  storageClassName: course-nfs-storage
+  nfs:
+    path: /data/k8s/jupyter-manager-user-data/nginx-worker
+    server: 192.168.255.22

@@ -1,0 +1,17 @@
+apiVersion: v1
+metadata:
+  name: dataopen-auth-env
+  namespace: ${DEPLOYMENT_NAMESPACE}
+kind: ConfigMap
+data:
+  U_MYSQL_HOST: db
+  U_MYSQL_USER: ${DB_USER}
+  U_MYSQL_DATABASE: ${DB_NAME}
+  U_MYSQL_PASSWORD: ucloud.cn
+  U_MYSQL_PORT: "3309"
+
+
+
+
+
+

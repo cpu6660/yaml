@@ -1,0 +1,119 @@
+admin:
+  access_log_path: /tmp/admin_access.log
+  address:
+    socket_address:
+      protocol: TCP
+      address: 127.0.0.1
+      port_value: 9901
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 10000
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          stat_prefix: ingress_http
+          route_config:
+            name: local_route
+            response_headers_to_add:
+            - header:
+                key: test-key
+                value: test-value
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/"
+                route:
+                  cluster: service_google
+              rate_limits:
+                stage: 0
+                actions:
+                  request_headers:
+                    header_name: "some-keyl"
+                    descriptor_key: "ceshi_key"
+
+              # route rate limit  https://www.envoyproxy.io/docs/envoy/v1.14.1/api-v2/api/v2/route/route_components.proto#envoy-api-field-route-virtualhost-rate-limits
+          http_filters:
+          - name: envoy.filters.http.fault
+            typed_config:
+              "@type": type.googleapis.com/envoy.config.filter.http.fault.v2.HTTPFault
+
+              delay:
+                fixed_delay:
+                  seconds: 3
+                percentage:
+                  numerator: 100
+          - name: envoy.filters.network.ext_authz
+            typed_config:
+              "@type": type.googleapis.com/envoy.config.filter.http.ext_authz.v2.ExtAuthz
+              grpc_service:
+                envoy_grpc:
+                  cluster_name: ext-authz
+
+          # global rate limit
+          - name: envoy.filters.http.ratelimit
+            config:
+              domain: "test.xmai.com"
+              failure_mode_deny: true
+              stage: 0
+              rate_limit_service:
+                grpc_service:
+                  envoy_grpc:
+                    cluster_name: ratelimitserver
+          - name: envoy.filters.http.router
+
+  clusters:
+  - name: service_google
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    # Comment out the following line to test on v6 networks
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: service_google
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 192.168.187.175
+                port_value: 8080
+
+  ## grpc server 要配置 http2_protocol_options
+  - name: ratelimitserver
+    connect_timeout: 1s
+    type: static
+    http2_protocol_options: {}
+    load_assignment:
+      cluster_name: ratelimitserver
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 192.168.187.175
+                port_value: 8033
+
+
+  ## ext auth 要配置 http2_protocol_options
+  - name: ext-authz
+    connect_timeout: 1s
+    type: static
+    http2_protocol_options: {}
+    load_assignment:
+      cluster_name: ext-authz
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 192.168.187.175
+                port_value: 8033

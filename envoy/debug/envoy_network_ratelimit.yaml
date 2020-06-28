@@ -1,0 +1,86 @@
+admin:
+  access_log_path: /tmp/admin_access.log
+  address:
+    socket_address:
+      protocol: TCP
+      address: 127.0.0.1
+      port_value: 9901
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 10000
+    filter_chains:
+    - filters:
+      #### rate limit configuration
+      - name: envoy.filters.network.ratelimit
+        typed_config:
+          "@type": "type.googleapis.com/envoy.config.filter.network.rate_limit.v2.RateLimit"
+          stat_prefix: "envoy_lalal"
+          domain: "test.xmai.com"
+          descriptors:
+            entries:
+            - key: client_id
+              value: foo
+          failure_mode_deny: false
+          rate_limit_service:
+            grpc_service:
+              envoy_grpc:
+                cluster_name: ratelimitserver
+
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          stat_prefix: ingress_http
+          route_config:
+            name: local_route
+            response_headers_to_add:
+            - header:
+                key: test-key
+                value: test-value
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/"
+                route:
+                  cluster: service_google
+          http_filters:
+          - name: envoy.filters.http.router
+
+  clusters:
+  - name: service_google
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    # Comment out the following line to test on v6 networks
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: service_google
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 192.168.0.104
+                port_value: 8080
+
+  ## grpc server 要配置 http2_protocol_options
+  - name: ratelimitserver
+    connect_timeout: 1s
+    type: static
+    http2_protocol_options: {}
+    load_assignment:
+      cluster_name: ratelimitserver
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 192.168.0.104
+                port_value: 8033
+

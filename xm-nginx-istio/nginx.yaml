@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-xm
+  namespace: test-istio-universal
+spec:
+  selector:
+    app: nginx-xm
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 443
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-xm
+  namespace: test-istio-universal
+  labels:
+    app: nginx-xm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-xm
+  template:
+    metadata:
+      labels:
+        app: nginx-xm
+    spec:
+      containers:
+      - name: nginx-xm
+        image: uhub.service.ucloud.cn/securityhouse/pyservice.nginx-xiamen:istio-90003
+        ports:
+        - containerPort: 80  # 容器端口，和服务端口一致
+        - containerPort: 443  # 容器端口，和服务端口一致
+
+        # 全局通用环境配置与局部特有环境变量配置
+        envFrom:
+        - configMapRef:
+            name: common-env
+        - configMapRef:
+            name: nginx-xiamen-env
+        # 需要使用jaeger的服务，引入改环境变量
+        env:
+        - name: JAEGER_AGENT_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP

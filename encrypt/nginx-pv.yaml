@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    app: nginx-encrypt-volume
+  name:  nginx-encrypt-volume
+
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 20M
+  storageClassName: course-nfs-storage
+  nfs:
+    path: /data/k8s/nginx-encrypt-volume
+    server: 192.168.255.22
+

@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: uwebtop                       ### 服务名 ###
+  namespace: ${MANAGER_NAMESPACE}
+spec:
+  selector:
+    app: uwebtop                      ### 服务名 ###
+  ports:
+  - protocol: TCP
+    port: 8099                        ### 对外暴露的服务端口 ###
+    targetPort: 8081                  ### pod端口(与下方pod内容器的端口相同) ###
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uwebtop                       ### 服务名 ###
+  namespace: ${MANAGER_NAMESPACE}
+  labels:
+    app: uwebtop                      ### 服务名 ###
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uwebtop                    ### 服务名 ###
+  template:
+    metadata:
+      labels:
+        app: uwebtop                  ### 服务名 ###
+    spec:
+      containers:
+      - name: uwebtop                 ### 服务名 ###
+        image: ${IMAGE}
+        ports:
+        - containerPort: 8081         ### 容器端口 ###
+        # 全局通用环境配置与局部特有环境变量配置
+        envFrom:
+        - configMapRef:
+            name: common-env
+        - configMapRef:
+            name: uwebtop-env         ### 局部自有配置,格式: service_name-env  ###

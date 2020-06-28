@@ -1,0 +1,16 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: example-configmap
+  namespace: uwebtop
+data:
+  # Configuration values can be set as key-value properties
+  DB_HOST: "db"
+  DB_NAME: "jupyterbe"
+  DB_USER: "root"
+  DB_PASSWORD: "xxxxx"
+  DB_PORT: "3309"
+
+  MINIO_ENDPOINT: "minio:9000"
+  MINIO_ACCESS_KEY: "minio"
+  MINIO_SECRET_KEY: "minio123"

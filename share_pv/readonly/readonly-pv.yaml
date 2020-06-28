@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    app: readonly-user-data
+  name:  readonly-user-data
+
+spec:
+  accessModes:
+  - ReadOnlyMany
+  capacity:
+    storage: 1Gi
+  storageClassName: course-nfs-storage
+  nfs:
+    path: /data/k8s/readonly
+    server: 192.168.255.22

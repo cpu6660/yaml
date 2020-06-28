@@ -18,5 +18,10 @@ spec:
       containers:
       - name: nginx
         image: nginx
+        env:
+        - name: SERVICE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         ports:
         - containerPort: 80

@@ -1,0 +1,14 @@
+apiVersion: v1
+metadata:
+  name: nginx-dataopen-env
+  namespace: ${DEPLOYMENT_NAMESPACE}
+kind: ConfigMap
+data:
+  JUPYTER_NAMESPACE: ${JUPYTER_NAMESPACE}
+  K8S_DNS_RESOLVER:  ${K8S_DNS_RESOLVER}
+
+
+
+
+
+

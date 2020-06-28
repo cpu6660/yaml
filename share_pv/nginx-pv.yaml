@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    app: jupyter-manager-user-data-1
+  name:  jupyter-manager-user-data-1
+
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  storageClassName: course-nfs-storage
+  nfs:
+    path: /data/k8s/jupyter-manager-user-data-1
+    server: 192.168.255.22

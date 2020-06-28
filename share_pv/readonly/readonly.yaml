@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx3-deployment
+  labels:
+    app: nginx3-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx3
+  template:
+    metadata:
+      labels:
+        app: nginx3
+    spec:
+      containers:
+      - name: nginx3
+        image: uhub.service.ucloud.cn/safehouse/nginx:1.0
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: jupyter-manager-user-data
+          mountPath: /minio_manager/conf
+      volumes:
+      - name: jupyter-manager-user-data
+        persistentVolumeClaim:
+          claimName: readonly-user-data-pvc
