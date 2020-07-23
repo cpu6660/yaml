@@ -1,0 +1,62 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: sleep-minio-pvc-v3
+  annotations:
+    key1: "value1"
+    key2: "value2"
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: csi-minio
+  ### request
+  resources:
+    requests:
+      storage: 1Gi
+  ### pvc-labels
+  selector:
+    matchLabels:
+      app: sleep-minio-manual
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sleep-minio-v3
+spec:
+  ports:
+  - port: 9015
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: sleep-minio-v3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep-minio-v3
+  labels:
+    app: sleep-minio-v3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleep-minio-v3
+  template:
+    metadata:
+      labels:
+        app: sleep-minio-v3
+    spec:
+      containers:
+      - name: sleep-minio-v3
+        image: uhub.service.ucloud.cn/safehouse/network-multitool:1.0
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: sleep-minio-pvc-v3
+          mountPath: /var/lib/www/html
+
+      volumes:
+      - name: sleep-minio-pvc-v3
+        persistentVolumeClaim:
+          claimName: sleep-minio-pvc-v3
+          readOnly: false

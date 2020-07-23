@@ -1,0 +1,48 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-udisk-ssd
+provisioner: udisk.csi.ucloud.cn
+parameters:
+  type: "ssd"
+  fsType: "ext4"
+  udataArkMode: "yes"
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-udisk-sata
+provisioner: udisk.csi.ucloud.cn
+parameters:
+  type: "sata"
+  fsType: "ext4"
+  udataArkMode: "yes"
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-udisk-ssd-retain
+provisioner: udisk.csi.ucloud.cn
+parameters:
+  type: "ssd"
+  fsType: "ext4"
+  udataArkMode: "no"
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-udisk-sata-retain
+provisioner: udisk.csi.ucloud.cn
+parameters:
+  type: "sata"
+  fsType: "ext4"
+  udataArkMode: "no"
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+---

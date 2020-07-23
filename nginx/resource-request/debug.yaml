@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debug-batch
+  #namespace: pre-xmai-batch
+  labels:
+    app: debug-batch
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: debug-batch
+  template:
+    metadata:
+      labels:
+        app: debug-batch
+    spec:
+      containers:
+      - name: debug-batch
+        image: uhub.service.ucloud.cn/safehouse/network-multitool:1.0
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 0.5Gi
+      nodeSelector:
+        request-test: "yes"
+

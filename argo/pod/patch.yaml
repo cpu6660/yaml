@@ -1,0 +1,13 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: marks-dummy-pod
+  annotations:
+    workflows.argoproj.io/node-name: test-lallall
+spec:
+  containers:
+  - name: marks-dummy-pod
+    image: docker/whalesay:latest
+    command: [sh, -c]
+    args: ["sleep 1; cowsay hello world | tee /tmp/hello_world.txt"]
+  restartPolicy: Never

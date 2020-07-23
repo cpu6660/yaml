@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uk8sconfig
+  namespace: kube-system
+data:
+  UCLOUD_ACCESS_PUBKEY: "8qGw6bhkN4fsuFrjBzVqeGijA/EQCxAzPpJszwtc8tr8s4aVfSAT8KZCsao="
+  UCLOUD_ACCESS_PRIKEY: "5ClPRnIWGrRQZQDf5A3J7gZDvWbqeGFqfeVi6IX8QMqg7W5AedrK1D6g41k0abI/"
+  UCLOUD_REGION_ID: "cn-bj2"
+  UCLOUD_PROJECT_ID: "org-dwzvsd"
+  UCLOUD_VPC_ID: "uvnet-sfom3z"
+  UCLOUD_SUBNET_ID: "subnet-oq0akg"
+  UCLOUD_API_ENDPOINT: "http://api.service.ucloud.cn"
+  UCLOUD_UK8S_CLUSTER_ID: "xx-xx-xx"

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    app: sleep-minio-manual
+  name:  pvc-manual-minio-pv
+
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: csi-minio
+  csi:
+    driver: "minio.csi.ucloud.cn"
+    volumeHandle: "pvc-manual-minio-pv"
+    fsType: ext4
+    volumeAttributes:
+      foo: bar

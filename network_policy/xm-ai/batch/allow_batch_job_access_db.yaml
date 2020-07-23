@@ -1,0 +1,20 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: batch-job-can-access-db
+  namespace: pre-xmai-batch
+spec:
+  podSelector: {}
+  egress:
+  - to:
+    # dns
+    - namespaceSelector:
+        matchLabels:
+          logic_zone: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    # db
+    - ipBlock:
+        cidr: "192.168.255.76/32"
+

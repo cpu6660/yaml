@@ -1,0 +1,55 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: sleep-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: csi-udisk-ssd-retain
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sleep
+spec:
+  ports:
+  - port: 9015
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: sleep
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep
+  labels:
+    app: sleep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleep
+  template:
+    metadata:
+      labels:
+        app: sleep
+    spec:
+      containers:
+      - name: sleep
+        image: uhub.service.ucloud.cn/safehouse/network-multitool:1.0
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: sleep-pvc
+          mountPath: /var/lib/www/html
+
+      volumes:
+      - name: sleep-pvc
+        persistentVolumeClaim:
+          claimName: sleep-pvc
+          readOnly: false

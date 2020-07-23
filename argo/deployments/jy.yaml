@@ -1,0 +1,106 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: offline-docker-task-
+  namespace: test-xmai-batch
+spec:
+  entrypoint: offline-docker-task
+  imagePullSecrets:
+  - name: sf-repo
+  - name: harbor-repo
+
+  - activeDeadlineSeconds: 43200
+    container:
+      image: 106.75.71.248/acc_1589/docker_test:test_0.0.1
+      resources:
+        limits:
+          cpu: 300M
+          memory: 300M
+        requests:
+          cpu: 300M
+          memory: 300M
+      volumeMounts:
+      - mountPath: /srv/data/dataset-002
+        name: 99c28792-c05f-11ea-a5da-a45e60d5e907
+    name: docker-task
+    outputs:
+      artifacts:
+      - name: generate-result
+        path: /result
+    retryStrategy:
+      limit: 10
+      retryPolicy: OnError
+  - container:
+      env:
+      - name: FEATURE
+        value: put_result
+      - name: USER_IMAGE_NAME
+        value: 106.75.71.248/acc_1589/docker_test:test_0.0.1
+      - name: MINIO_DOMAIN
+        value: localhost:9000
+      - name: ACCESS_KEY_ID
+        value: minioadmin
+      - name: SECRET_ACCESS_KEY
+        value: minioadmin
+      - name: SRC_BUCKET_NAME
+        value: 66f4b32ae1404308ba4004db80a1266d-1605
+      - name: IMAGE_UUID
+        value: 99c2847c-c05f-11ea-a5da-a45e60d5e907
+      - name: MYSQL_HOST
+        value: localhost
+      - name: MYSQL_PORT
+        value: '3306'
+      - name: MYSQL_USER
+        value: root
+      - name: MYSQL_PASSWORD
+        value: Quattro!
+      - name: MYSQL_DB_NAME
+        value: image_manage
+      - name: RESULT_DIR_SIZE
+        value: '100000000'
+      image: uhub.service.ucloud.cn/safehouse/offline_server_callback:0.0.17
+      volumeMounts:
+      - mountPath: /etc/localtime
+        name: tz-config
+    inputs:
+      artifacts:
+      - name: message
+        path: /result
+    name: docker-callback
+    retryStrategy:
+      limit: 3
+      retryPolicy: OnError
+  - container:
+      env:
+      - name: OFFLINE_TASK_TYPE
+        value: docker_task
+      - name: WORKFLOW_STATUS
+        value: '{{workflow.status}}'
+      - name: MYSQL_HOST
+        value: localhost
+      - name: MYSQL_PORT
+        value: '3306'
+      - name: MYSQL_USER
+        value: root
+      - name: MYSQL_PASSWORD
+        value: Quattro!
+      - name: MYSQL_DB_NAME
+        value: image_manage
+      - name: IMAGE_UUID
+        value: 99c2847c-c05f-11ea-a5da-a45e60d5e907
+      image: uhub.service.ucloud.cn/safehouse/offline_server_callback:0.0.17
+      volumeMounts:
+      - mountPath: /etc/localtime
+        name: tz-config
+    name: exit-handler
+    retryStrategy:
+      limit: 3
+      retryPolicy: OnError
+  volumes:
+  - hostPath:
+      path: /data/dataset-002
+      type: Directory
+    name: 99c28792-c05f-11ea-a5da-a45e60d5e907
+  - hostPath:
+      path: /etc/localtime
+    name: tz-config
