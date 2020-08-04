@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sleep
+spec:
+  ports:
+  - port: 9015
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: sleep
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep
+  labels:
+    app: sleep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleep
+  template:
+    metadata:
+      labels:
+        app: sleep
+    spec:
+
+      # 容忍度
+      tolerations:
+      - effect: "NoSchedule"
+        key: "key1"
+        operator: "Exists"
+
+      # 亲和性
+      affinity:
+        # node 节点亲和性
+        nodeAffinity:
+          # 最好要满足这些条件
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+              matchFields:
+              - key: metadata.name
+                operator: In
+                values:
+                - node3
+          # 一定要满足的条件
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+              matchFields:
+              - key: metadata.name
+                operator: In
+                values:
+                - node1
+
+        # pod 亲和性
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  testkey: sleep-v2
+              namespaces:
+              - default
+              topologyKey: topology.udisk.csi.ucloud.cn/region
+
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                testkey: sleep-v2
+            namespaces:
+            - default
+            topologyKey: topology.udisk.csi.ucloud.cn/region
+
+        # pod 反亲和性
+#        podAntiAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#          - labelSelector:
+#              matchLabels:
+#                testkey: sleep-v2
+#            namespaces:
+#            - default
+#            topologyKey: topology.udisk.csi.ucloud.cn/region
+
+      volumes:
+      - name: sec-ctx-vol
+        emptyDir: {}
+      containers:
+      - name: sleep
+        image: uhub.service.ucloud.cn/safehouse/network-multitool:1.0
+        ports:
+        - containerPort: 80
+      - name: gin-upgrade
+        image: uhub.service.ucloud.cn/safehouse/gin-upgrade:1.1
+        volumeMounts:
+        - name: sec-ctx-vol
+          mountPath: /data/demo
+        ports:
+        - containerPort: 8080
+
+

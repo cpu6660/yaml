@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep
+  labels:
+    app: sleep
+  annotations:
+    key1: "value1"
+    key2: "value2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleep
+  template:
+    metadata:
+      labels:
+        app: sleep
+    spec:
+      containers:
+      - name: sleep
+        image: uhub.service.ucloud.cn/safehouse/network-multitool:1.1
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: sleep-pvc
+          mountPath: /var/lib/www/html
+
+      volumes:
+      - name: sleep-pvc
+        persistentVolumeClaim:
+          claimName: sleep-pvc
+          readOnly: false

@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongodb
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+  - port: 30017
+    #name: mongodb
+    protocol: TCP
+    targetPort: 30017

@@ -10,7 +10,11 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: course-nfs-storage
+  #storageClassName: course-nfs-storage
+  # selector 用来匹配pv,如果没有匹配到pv,又指定了storageClassName,该pvc资源的创建会报错
+  # 如果selector 匹配到了对应的pv,该pvc的创建就不会报错
   selector:
-    matchLabels:
-      app: readonly-user-data
+    matchLabels: {}
+#  selector:
+#    matchLabels:
+#      app: readonly-user-data

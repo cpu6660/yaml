@@ -1,0 +1,13 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: sleep  # 名称
+  namespace: default #k8s命名空间
+spec:
+  maxReplicas: 10  # 最大副本数
+  minReplicas: 1   # 最小副本数
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: sleep   # 监控名为ms-wechat的Deployment
+  targetCPUUtilizationPercentage: 50  # cpu 阈值

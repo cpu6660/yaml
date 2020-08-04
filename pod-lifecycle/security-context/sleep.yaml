@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sleep
+spec:
+  ports:
+  - port: 9015
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: sleep
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep
+  labels:
+    app: sleep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleep
+  template:
+    metadata:
+      labels:
+        app: sleep
+    spec:
+      volumes:
+      - name: sec-ctx-vol
+        emptyDir: {}
+      # pod level security context
+      securityContext:
+        fsGroup: 1000
+        supplementalGroups:
+          - 3000
+          - 4000
+      containers:
+      - name: sleep
+        image: uhub.service.ucloud.cn/safehouse/network-multitool:1.0
+        ports:
+        - containerPort: 80
+      - name: gin-upgrade
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+        image: uhub.service.ucloud.cn/safehouse/gin-upgrade:1.1
+        volumeMounts:
+        - name: sec-ctx-vol
+          mountPath: /data/demo
+        ports:
+        - containerPort: 8080
+
+
