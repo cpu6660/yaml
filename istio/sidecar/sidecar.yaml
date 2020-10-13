@@ -1,0 +1,10 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Sidecar
+metadata:
+  name: default
+  namespace: xxx-xxx
+spec:
+    egress:
+    - hosts:
+        - "istio-test/network-tool-v2.istio-test.svc.cluster.local"
+        - "istio-system/*"

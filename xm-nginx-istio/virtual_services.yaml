@@ -1,3 +1,4 @@
+#对应gateway的virtualService要和gateway在一个namespace
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
@@ -7,13 +8,13 @@ spec:
   gateways:
   - ucloud-gateway
   hosts:
-  - '*'
+  - 'edge.sf.ucloud.cn'
   http:
   - match:
     - uri:
         prefix: /
     route:
     - destination:
-        host: nginx-xm.test-istio-universal.svc.cluster.local
+        host: sleep.project-caribou.svc.cluster.local
         port:
-          number: 80
+          number: 9015

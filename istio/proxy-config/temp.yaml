@@ -1,0 +1,211 @@
+[
+    {
+        "name": "172.20.204.94_80",
+        "address": {
+            "socketAddress": {
+                "address": "172.20.204.94",
+                "portValue": 80
+            }
+        },
+        "filterChains": [
+            {
+                "filters": [
+                    {
+                        "name": "istio.stats",
+                        "typedConfig": {
+                            "@type": "type.googleapis.com/udpa.type.v1.TypedStruct",
+                            "typeUrl": "type.googleapis.com/envoy.extensions.filters.network.wasm.v3.Wasm",
+                            "value": {
+                                "config": {
+                                    "configuration": {
+                                        "@type": "type.googleapis.com/google.protobuf.StringValue",
+                                        "value": "{\n  \"debug\": \"false\",\n  \"stat_prefix\": \"istio\",\n  \"metrics\": [\n    {\n      \"dimensions\": {\n        \"source_cluster\": \"node.metadata['CLUSTER_ID']\",\n        \"destination_cluster\": \"upstream_peer.cluster_id\"\n      }\n    }\n  ]\n}\n"
+                                    },
+                                    "root_id": "stats_outbound",
+                                    "vm_config": {
+                                        "code": {
+                                            "local": {
+                                                "inline_string": "envoy.wasm.stats"
+                                            }
+                                        },
+                                        "runtime": "envoy.wasm.runtime.null",
+                                        "vm_id": "tcp_stats_outbound"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "envoy.filters.network.tcp_proxy",
+                        "typedConfig": {
+                            "@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy",
+                            "statPrefix": "outbound|80||network-tool.sample.svc.cluster.local",
+                            "cluster": "outbound|80||network-tool.sample.svc.cluster.local"
+                        }
+                    }
+                ]
+            },
+            {
+                "filterChainMatch": {
+                    "applicationProtocols": [
+                        "http/1.0",
+                        "http/1.1",
+                        "h2c"
+                    ]
+                },
+                "filters": [
+                    {
+                        "name": "envoy.filters.network.http_connection_manager",
+                        "typedConfig": {
+                            "@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager",
+                            "statPrefix": "outbound_172.20.204.94_80",
+                            "rds": {
+                                "configSource": {
+                                    "ads": {},
+                                    "resourceApiVersion": "V3"
+                                },
+                                "routeConfigName": "network-tool.sample.svc.cluster.local:80"
+                            },
+                            "httpFilters": [
+                                {
+                                    "name": "istio.metadata_exchange",
+                                    "typedConfig": {
+                                        "@type": "type.googleapis.com/udpa.type.v1.TypedStruct",
+                                        "typeUrl": "type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm",
+                                        "value": {
+                                            "config": {
+                                                "configuration": {
+                                                    "@type": "type.googleapis.com/google.protobuf.StringValue",
+                                                    "value": "{}\n"
+                                                },
+                                                "vm_config": {
+                                                    "code": {
+                                                        "local": {
+                                                            "inline_string": "envoy.wasm.metadata_exchange"
+                                                        }
+                                                    },
+                                                    "runtime": "envoy.wasm.runtime.null"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "istio.alpn",
+                                    "typedConfig": {
+                                        "@type": "type.googleapis.com/istio.envoy.config.filter.http.alpn.v2alpha1.FilterConfig",
+                                        "alpnOverride": [
+                                            {
+                                                "alpnOverride": [
+                                                    "istio-http/1.0",
+                                                    "istio"
+                                                ]
+                                            },
+                                            {
+                                                "upstreamProtocol": "HTTP11",
+                                                "alpnOverride": [
+                                                    "istio-http/1.1",
+                                                    "istio"
+                                                ]
+                                            },
+                                            {
+                                                "upstreamProtocol": "HTTP2",
+                                                "alpnOverride": [
+                                                    "istio-h2",
+                                                    "istio"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "envoy.filters.http.cors",
+                                    "typedConfig": {
+                                        "@type": "type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors"
+                                    }
+                                },
+                                {
+                                    "name": "envoy.filters.http.fault",
+                                    "typedConfig": {
+                                        "@type": "type.googleapis.com/envoy.extensions.filters.http.fault.v3.HTTPFault"
+                                    }
+                                },
+                                {
+                                    "name": "istio.stats",
+                                    "typedConfig": {
+                                        "@type": "type.googleapis.com/udpa.type.v1.TypedStruct",
+                                        "typeUrl": "type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm",
+                                        "value": {
+                                            "config": {
+                                                "configuration": {
+                                                    "@type": "type.googleapis.com/google.protobuf.StringValue",
+                                                    "value": "{\n  \"debug\": \"false\",\n  \"stat_prefix\": \"istio\",\n  \"metrics\": [\n    {\n      \"dimensions\": {\n        \"source_cluster\": \"node.metadata['CLUSTER_ID']\",\n        \"destination_cluster\": \"upstream_peer.cluster_id\"\n      }\n    }\n  ]\n}\n"
+                                                },
+                                                "root_id": "stats_outbound",
+                                                "vm_config": {
+                                                    "code": {
+                                                        "local": {
+                                                            "inline_string": "envoy.wasm.stats"
+                                                        }
+                                                    },
+                                                    "runtime": "envoy.wasm.runtime.null",
+                                                    "vm_id": "stats_outbound"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "envoy.filters.http.router",
+                                    "typedConfig": {
+                                        "@type": "type.googleapis.com/envoy.extensions.filters.http.router.v3.Router"
+                                    }
+                                }
+                            ],
+                            "tracing": {
+                                "clientSampling": {
+                                    "value": 100
+                                },
+                                "randomSampling": {
+                                    "value": 1
+                                },
+                                "overallSampling": {
+                                    "value": 100
+                                }
+                            },
+                            "streamIdleTimeout": "0s",
+                            "useRemoteAddress": false,
+                            "generateRequestId": true,
+                            "upgradeConfigs": [
+                                {
+                                    "upgradeType": "websocket"
+                                }
+                            ],
+                            "normalizePath": true
+                        }
+                    }
+                ]
+            }
+        ],
+        "deprecatedV1": {
+            "bindToPort": false
+        },
+        "listenerFilters": [
+            {
+                "name": "envoy.filters.listener.tls_inspector",
+                "typedConfig": {
+                    "@type": "type.googleapis.com/envoy.extensions.filters.listener.tls_inspector.v3.TlsInspector"
+                }
+            },
+            {
+                "name": "envoy.filters.listener.http_inspector",
+                "typedConfig": {
+                    "@type": "type.googleapis.com/envoy.extensions.filters.listener.http_inspector.v3.HttpInspector"
+                }
+            }
+        ],
+        "listenerFiltersTimeout": "5s",
+        "continueOnListenerFiltersTimeout": true,
+        "trafficDirection": "OUTBOUND"
+    }
+]

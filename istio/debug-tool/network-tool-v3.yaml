@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-tool-v3
+  labels:
+    app: network-tool-v3
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: network-tool-v3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-tool-v3
+  labels:
+    app: network-tool-v3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: network-tool-v3
+  template:
+    metadata:
+      labels:
+        app: network-tool-v3
+    spec:
+      containers:
+      - name: network-tool-v3
+        image: uhub.service.ucloud.cn/safehouse/network-multitool:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80

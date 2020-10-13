@@ -1,0 +1,47 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  components:
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+      k8s: 
+        service:
+          ports:
+          - name: status-port
+            nodePort: 32380
+            port: 15021
+            protocol: TCP
+            targetPort: 15021
+          - name: http2
+            nodePort: 31535
+            port: 80
+            protocol: TCP
+            targetPort: 8080
+          - name: https
+            nodePort: 32246
+            port: 443
+            protocol: TCP
+            targetPort: 8443
+          - name: tls
+            nodePort: 30398
+            port: 15443
+            protocol: TCP
+            targetPort: 15443
+
+  meshConfig:
+    defaultConfig:
+     discoveryAddress: "istiod-remote.istio-system.svc:31355"
+  values:
+    global:
+      hub: uhub.service.ucloud.cn/safehouse
+      imagePullSecrets:
+      - sf-repo
+      # The remote cluster's name and network name must match the values specified in the
+      # mesh network configuration of the primary cluster.
+      multiCluster:
+        clusterName: remote0
+      network: network2
+
+      # Replace ISTIOD_REMOTE_EP with the the value of ISTIOD_REMOTE_EP set earlier.
+      remotePilotAddress: 106.75.29.147

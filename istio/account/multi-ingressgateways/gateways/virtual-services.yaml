@@ -1,0 +1,35 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: ucloud-gateway
+  #namespace: istio-system
+
+spec:
+  selector:
+    app: second-istio-ingressgateway
+  servers:
+  - hosts:
+    - "*"
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+[root@master1 new-istio]# cat virtual-service.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: edge-ucloud
+spec:
+  gateways:
+  - ucloud-gateway
+  hosts:
+  - 'edge.sf.ucloud.cn'
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: sleep.project-caribou.svc.cluster.local
+        port:
+          number: 9015

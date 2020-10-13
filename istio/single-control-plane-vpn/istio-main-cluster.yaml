@@ -1,0 +1,21 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: primary-cluster
+spec:
+  components:
+   ingressGateways:
+   - name: istio-ingressgateway
+     enabled: true
+  hub: uhub.service.ucloud.cn/safehouse
+  values:
+    global:
+      imagePullSecrets:
+      - sf-repo
+      imagePullPolicy: IfNotPresent
+      multiCluster:
+        clusterName: cluster0
+      network: network0
+      # Use the existing istio-ingressgateway.
+      meshExpansion:
+        enabled: true

@@ -1,0 +1,12 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "RequestAuthentication"
+metadata:
+  name: "jwt-example"
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  jwtRules:
+  - issuer: "https://192.168.186.180:30004"
+    jwks: '{"keys": [{"kty": "RSA", "alg": "RS256", "use": "sig", "kid": "8fbb0b491397c2dc62c1933f47709d0c", "n": "yAsNSjDuWtnVs0teWmtdflyEK7BC41ncguZw1CaNSV5CMCKx8uQLrL5dRnD2OAlHCm8hDGmT4NOTLsT0FGc6LeYXTcrjiXQPIjzTaJIfnqj_c_gr32ZEoJosfxLfnnoGGAglE8Pix21HpWjwuBDRLGfT6_lzT8sHdctqP1kcCvrvrDQwNZldkVSadBmA0ZWHMETXJVBEE7teAQODgM73OUiq1shhXsJ-7q5mjuifGn50ECc7ehh2t8BWyiObjt1EOqG3Q3dI4mmPMKWCkd8wZ3kfrKUKvlKH48wjDxSBDrEv-6CD6hyQN_K_mWwN6LvDXsV6BzegY7_Wi0VqfdG4Ww", "e": "AQAB"}]}'

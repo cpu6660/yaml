@@ -1,0 +1,30 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  hub: uhub.service.ucloud.cn/safehouse
+  values:
+    global:
+      imagePullSecrets:
+      - sf-repo
+      imagePullPolicy: IfNotPresent
+      multiCluster:
+        clusterName: main0
+      network: network1
+
+      meshNetworks:
+        network1:
+          endpoints:
+          - fromRegistry:  main0
+          gateways:
+          - registry_service_name: istio-ingressgateway.istio-system.svc.cluster.local
+            port: 443
+
+        network2:
+          endpoints:
+          - fromRegistry: remote0
+          gateways:
+          - registry_service_name: istio-ingressgateway.istio-system.svc.cluster.local
+            port: 443
+
+      meshExpansion:
+        enabled: true

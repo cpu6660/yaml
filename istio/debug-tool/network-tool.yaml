@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-tool
+  namespace: istio-test
+  labels:
+    app: network-tool
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: network-tool
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-tool
+  labels:
+    app: network-tool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: network-tool
+  template:
+    metadata:
+      labels:
+        app: network-tool
+    spec:
+      containers:
+      - name: network-tool
+        image: uhub.service.ucloud.cn/safehouse/network-multitool:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80

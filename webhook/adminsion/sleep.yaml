@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep-admission
+  labels:
+    app: sleep-admission
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleep-admission
+  template:
+    metadata:
+      labels:
+        app: sleep-admission
+    spec:
+      containers:
+      - name: sleep-admission
+        image: uhub.service.ucloud.cn/safehouse/php-apache:1.1
+        command: ["sleep", "3600"]
+        imagePullPolicy: IfNotPresent
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sleep-admission
+  labels:
+    app: sleep-admission
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: sleep-admission
+
